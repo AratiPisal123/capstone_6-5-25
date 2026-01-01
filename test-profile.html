@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Profile Update</title>
+</head>
+<body>
+    <h1>Test Profile Update</h1>
+    <button onclick="testProfileUpdate()">Test Update</button>
+    <div id="result"></div>
+
+    <script>
+        async function testProfileUpdate() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                // First, let's try to get the current user info
+                const token = localStorage.getItem('token') || 'test-token';
+                
+                const response = await fetch('http://localhost:8081/api/user/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        name: 'Test User Updated',
+                        mobile: '9876543210'
+                    })
+                });
+                
+                const result = await response.text();
+                resultDiv.innerHTML = `
+                    <h3>Response Status: ${response.status}</h3>
+                    <h3>Response Text:</h3>
+                    <pre>${result}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <h3>Error:</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
