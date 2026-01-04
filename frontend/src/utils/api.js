@@ -1,7 +1,24 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081/api'
+﻿const USER_SERVICE_URL = import.meta.env.VITE_USER_SERVICE_URL || 'http://localhost:8081'
+
+// All endpoints now go to the single merged service
+const getServiceUrl = (endpoint) => {
+  return USER_SERVICE_URL
+}
+
+const buildUrl = (baseUrl, endpoint) => {
+  const base = (baseUrl || '').replace(/\/+$/, '')
+  const path = endpoint?.startsWith('/') ? endpoint : `/${endpoint || ''}`
+
+  if (base.endsWith('/api') && path.startsWith('/api/')) {
+    return `${base.slice(0, -4)}${path}`
+  }
+
+  return `${base}${path}`
+}
 
 export const apiRequest = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token')
+  const serviceUrl = getServiceUrl(endpoint)
   
   const config = {
     headers: {
@@ -11,9 +28,11 @@ export const apiRequest = async (endpoint, options = {}) => {
     ...options,
   }
 
-  const fullUrl = `${API_BASE_URL}${endpoint}`
+  const fullUrl = buildUrl(serviceUrl, endpoint)
   console.log('=== API Request ===')
-  console.log('URL:', fullUrl)
+  console.log('Service URL:', serviceUrl)
+  console.log('Endpoint:', endpoint)
+  console.log('Full URL:', fullUrl)
   console.log('Config:', config)
   console.log('Token exists:', !!token)
   console.log('Token length:', token?.length || 0)
@@ -27,13 +46,18 @@ export const apiRequest = async (endpoint, options = {}) => {
 
     if (!response.ok) {
       let message = `HTTP error! status: ${response.status}`
+      let errorBody = null
       try {
-        const errorBody = await response.json()
+        errorBody = await response.json()
         if (errorBody?.message) message = errorBody.message
         console.error('API Error Body:', errorBody)
       } catch {
-        const errorText = await response.text()
-        console.error('API Error Text:', errorText)
+        try {
+          const errorText = await response.text()
+          console.error('API Error Text:', errorText)
+        } catch {
+          console.error('Could not read error response')
+        }
       }
       throw new Error(message)
     }

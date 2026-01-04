@@ -103,9 +103,9 @@ public class GoogleOAuthService {
             String randomPassword = "OAUTH_" + System.currentTimeMillis() + "_" + Math.random();
             user.setPassword(passwordService.hashPassword(randomPassword));
             
-            // Set mobile number - for OAuth users, we can leave it empty or use a placeholder
+            // Set mobile number - for OAuth users, use a unique placeholder
             // In a real application, you might ask for this later
-            user.setMobile(""); // Empty for now, can be updated later
+            user.setMobile("oauth_" + googleId); // Unique placeholder for OAuth users
             
             userRepository.persist(user);
             LOG.infof("Created new user from Google OAuth: %s with name: %s", email, user.getName());

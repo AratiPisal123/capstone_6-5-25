@@ -64,6 +64,13 @@
             <artifactId>quarkus-hibernate-validator</artifactId>
         </dependency>
         
+        <!-- Apache Solr for search functionality -->
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+            <version>8.11.2</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

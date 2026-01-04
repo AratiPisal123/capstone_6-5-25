@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { logout } from '../store/actions/authActions'
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import { logout } from '../redux/slices/authSlice'
 import HomePage from './pages/HomePage'
 import CataloguePage from './pages/CataloguePage'
 import SubscriptionsPage from './pages/SubscriptionsPage'
@@ -11,38 +12,26 @@ import SupportPage from './pages/SupportPage'
 import OrderDetailsPage from './pages/OrderDetailsPage'
 import OrderTrackingPage from './pages/OrderTrackingPage'
 import OffersPage from './pages/OffersPage'
-import InvoicesPage from './pages/InvoicesPage'
+import InvoicePage from './pages/InvoicePage'
 import ShoppingCartPage from './pages/ShoppingCartPage'
 import PrescriptionManagementPage from './pages/PrescriptionManagementPage'
 import OrderConfirmationPage from './pages/OrderConfirmationPage'
 import CheckoutPage from './pages/CheckoutPage'
 import ProfilePage from './pages/ProfilePage'
+import ProductDetailPage from './pages/ProductDetailPage'
 import './Dashboard.css'
 
 function Dashboard() {
-  const [currentPage, setCurrentPage] = useState('home')
-  const [sidebarOpen, setSidebarOpen] = useState(true) // Start with sidebar open
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
-  const user = useSelector(state => state.user)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const user = useSelector(state => state.auth?.user)
   const dispatch = useDispatch()
 
   const handleLogout = () => {
     console.log('Logout initiated')
-    
-    // Dispatch logout action to update Redux state and clear localStorage
     dispatch(logout())
-    
-    console.log('Logout dispatched')
-    
-    // Force redirect to login page immediately
-    window.location.replace('/login')
-    
-    // Fallback redirect
-    setTimeout(() => {
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login'
-      }
-    }, 100)
+    navigate('/login')
   }
 
   const toggleSidebar = () => {
@@ -54,73 +43,21 @@ function Dashboard() {
   }
 
   const menuItems = [
-    { id: 'home', label: 'Home', icon: '🏠' },
-    { id: 'catalogue', label: 'Catalogue', icon: '📚' },
-    { id: 'subscriptions', label: 'Subscriptions', icon: '🔄' },
-    { id: 'orders', label: 'Orders', icon: '📦' },
-    { id: 'wishlist', label: 'Wishlist', icon: '❤️' },
-    { id: 'addresses', label: 'Addresses', icon: '📍' },
-    { id: 'support', label: 'Support', icon: '💬' },
-    { id: 'offers', label: 'Offers', icon: '🏷️' },
-    { id: 'invoices', label: 'Invoices', icon: '📄' },
-    { id: 'shopping-cart', label: 'Cart', icon: '🛒' },
-    { id: 'prescriptions', label: 'Prescriptions', icon: '💊' }
+    { id: 'home', label: 'Home', icon: '🏠', path: '/home' },
+    { id: 'catalogue', label: 'Catalogue', icon: '📚', path: '/catalogue' },
+    { id: 'subscriptions', label: 'Subscriptions', icon: '🔄', path: '/subscriptions' },
+    { id: 'orders', label: 'Orders', icon: '📦', path: '/orders' },
+    { id: 'wishlist', label: 'Wishlist', icon: '❤️', path: '/wishlist' },
+    { id: 'addresses', label: 'Addresses', icon: '📍', path: '/addresses' },
+    { id: 'support', label: 'Support', icon: '💬', path: '/support' },
+    { id: 'offers', label: 'Offers', icon: '🏷️', path: '/offers' },
+    { id: 'invoices', label: 'Invoices', icon: '📄', path: '/invoices' },
+    { id: 'shopping-cart', label: 'Cart', icon: '🛒', path: '/shopping-cart' },
+    { id: 'prescriptions', label: 'Prescriptions', icon: '💊', path: '/prescriptions' }
   ]
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'home':
-        return <HomePage />
-      case 'catalogue':
-        return <CataloguePage />
-      case 'subscriptions':
-        return <SubscriptionsPage />
-      case 'orders':
-        return <OrdersPage />
-      case 'wishlist':
-        return <WishlistPage />
-      case 'addresses':
-        return <AddressesPage />
-      case 'support':
-        return <SupportPage />
-      case 'order-details':
-        return <OrderDetailsPage />
-      case 'order-tracking':
-        return <OrderTrackingPage />
-      case 'offers':
-        return <OffersPage />
-      case 'invoices':
-        return <InvoicesPage />
-      case 'shopping-cart':
-        return <ShoppingCartPage />
-      case 'prescriptions':
-        return <PrescriptionManagementPage />
-      case 'order-confirmation':
-        return <OrderConfirmationPage />
-      case 'checkout':
-        return <CheckoutPage />
-      case 'profile':
-        return <ProfilePage />
-      default:
-        return <HomePage />
-    }
-  }
-
-  const getRightSidebarLabel = () => {
-    const labels = {
-      'home': 'Dashboard',
-      'catalogue': 'B2C Catalogue',
-      'subscriptions': 'Subscriptions',
-      'orders': 'Orders List',
-      'wishlist': 'Wishlist',
-      'addresses': 'Address Management',
-      'support': 'Support',
-      'offers': 'Special Offers',
-      'invoices': 'Invoice History',
-      'shopping-cart': 'Your Cart',
-      'prescriptions': 'Manage Prescriptions'
-    }
-    return labels[currentPage] || 'Dashboard'
+  const isActive = (path) => {
+    return location.pathname === path
   }
 
   return (
@@ -133,22 +70,22 @@ function Dashboard() {
         <input type="text" className="header-search" placeholder="Search products, orders, help" />
         <div className="header-right">
           <button 
-            className={`header-icon-btn ${currentPage === 'wishlist' ? 'active' : ''}`}
-            onClick={() => setCurrentPage('wishlist')}
+            className={`header-icon-btn ${isActive('/wishlist') ? 'active' : ''}`}
+            onClick={() => navigate('/wishlist')}
             title="Wishlist"
           >
             ❤️
           </button>
           <button 
-            className={`header-icon-btn ${currentPage === 'offers' ? 'active' : ''}`}
-            onClick={() => setCurrentPage('offers')}
+            className={`header-icon-btn ${isActive('/offers') ? 'active' : ''}`}
+            onClick={() => navigate('/offers')}
             title="Offers"
           >
             🛍️ Offers
           </button>
           <button 
-            className={`header-icon-btn ${currentPage === 'shopping-cart' ? 'active' : ''}`}
-            onClick={() => setCurrentPage('shopping-cart')}
+            className={`header-icon-btn ${isActive('/shopping-cart') ? 'active' : ''}`}
+            onClick={() => navigate('/shopping-cart')}
             title="Shopping Cart"
           >
             🛒 Cart (2)
@@ -160,7 +97,7 @@ function Dashboard() {
         <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
           <div 
             className="sidebar-user"
-            onClick={() => setCurrentPage('profile')}
+            onClick={() => navigate('/profile')}
             style={{ cursor: 'pointer' }}
           >
             <div className="user-avatar">{user?.name?.charAt(0) || 'C'}</div>
@@ -173,8 +110,8 @@ function Dashboard() {
               {menuItems.map(item => (
                 <li 
                   key={item.id}
-                  onClick={() => setCurrentPage(item.id)} 
-                  className={currentPage === item.id ? 'active' : ''}
+                  onClick={() => navigate(item.path)} 
+                  className={isActive(item.path) ? 'active' : ''}
                 >
                   <span className="menu-icon">{item.icon}</span>
                   <span className="menu-label">{item.label}</span>
@@ -188,7 +125,28 @@ function Dashboard() {
 
         <main className="dashboard-main">
           <div className="dashboard-content">
-            {renderPage()}
+            <Routes>
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/catalogue" element={<CataloguePage />} />
+              <Route path="/subscriptions" element={<SubscriptionsPage />} />
+              <Route path="/orders" element={<OrdersPage />} />
+              <Route path="/wishlist" element={<WishlistPage />} />
+              <Route path="/addresses" element={<AddressesPage />} />
+              <Route path="/support" element={<SupportPage />} />
+              <Route path="/order-details/:orderNumber" element={<OrderDetailsPage />} />
+              <Route path="/order-tracking" element={<OrderTrackingPage />} />
+              <Route path="/offers" element={<OffersPage />} />
+              <Route path="/invoices" element={<InvoicePage />} />
+              <Route path="/shopping-cart" element={<ShoppingCartPage />} />
+              <Route path="/prescriptions" element={<PrescriptionManagementPage />} />
+              <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/products/:id" element={<ProductDetailPage />} />
+              <Route path="/products/:sku" element={<ProductDetailPage />} />
+              <Route path="/products" element={<CataloguePage />} />
+              <Route path="/" element={<HomePage />} />
+            </Routes>
           </div>
         </main>
       </div>

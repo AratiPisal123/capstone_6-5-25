@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './components/LandingPage'
 import Login from './components/Login'
 import Signup from './components/Signup'
@@ -7,96 +8,63 @@ import SuccessPage from './components/SuccessPage'
 import Dashboard from './components/Dashboard'
 import ForgotPassword from './components/auth/ForgotPassword'
 import ResetPassword from './components/auth/ResetPassword'
+import ToastContainer from './components/common/ToastContainer'
 import './App.css'
 import './assets/styles/global.css'
 
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState('landing')
-  const [resetToken, setResetToken] = useState(null)
-  const isAuthenticated = useSelector(state => state.isAuthenticated)
-
-  useEffect(() => {
-    // Check for reset token in URL
-    const urlParams = new URLSearchParams(window.location.search)
-    const token = urlParams.get('token')
-    if (token) {
-      setResetToken(token)
-      setCurrentPage('reset-password')
-    }
-    
-    // Check for OAuth success or error
-    const path = window.location.pathname
-    if (path === '/auth/success') {
-      // OAuth was successful, redirect to dashboard or login with token
-      setCurrentPage('login')
-    } else if (path === '/auth/callback') {
-      const code = urlParams.get('code')
-      const error = urlParams.get('error')
-      
-      if (code) {
-        // Handle OAuth callback with authorization code
-        console.log('Received OAuth code:', code)
-        // TODO: Exchange code for token with backend
-        setCurrentPage('login')
-      } else if (error) {
-        console.error('OAuth error:', error)
-        setCurrentPage('login')
-      }
-    } else if (path === '/login') {
-      const error = urlParams.get('error')
-      if (error) {
-        // Handle OAuth error
-        console.error('OAuth error:', error)
-        setCurrentPage('login')
-      }
-    }
-  }, [])
-
-  // Reset currentPage when user logs out (but not on initial load or when navigating to auth pages)
-  useEffect(() => {
-    const authPages = ['landing', 'login', 'signup', 'forgot-password', 'reset-password', 'success'];
-    if (!isAuthenticated && !authPages.includes(currentPage)) {
-      console.log('User logged out from protected page, resetting currentPage to login')
-      setCurrentPage('login')
-    }
-  }, [isAuthenticated, currentPage])
+  const isAuthenticated = useSelector(state => state.auth?.isAuthenticated || false)
 
   if (isAuthenticated) {
     console.log('User is authenticated, showing Dashboard')
     return <Dashboard />
   }
 
-  console.log('User not authenticated, currentPage:', currentPage, 'isAuthenticated:', isAuthenticated)
-  console.log('Available pages: landing, login, signup, forgot-password, reset-password, success')
+  console.log('User not authenticated, showing auth pages')
 
-  switch (currentPage) {
-    case 'landing':
-      console.log('Rendering LandingPage')
-      return <LandingPage onNavigate={setCurrentPage} />
-    case 'login':
-      console.log('Rendering Login')
-      return <Login onNavigate={setCurrentPage} />
-    case 'signup':
-      console.log('Rendering SignUp')
-      return <Signup onNavigate={setCurrentPage} />
-    case 'forgot-password':
-      console.log('Rendering ForgotPassword')
-      return <ForgotPassword onNavigate={setCurrentPage} />
-    case 'reset-password':
-      console.log('Rendering ResetPassword')
-      return <ResetPassword onNavigate={setCurrentPage} resetToken={resetToken} />
-    case 'success':
-      console.log('Rendering SuccessPage')
-      return <SuccessPage onNavigate={setCurrentPage} />
-    default:
-      console.log('Default case - rendering Login page')
-      return <Login onNavigate={setCurrentPage} /> // Show login by default
-  }
+  return (
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/landing" element={<LandingPage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/success" element={<SuccessPage />} />
+      
+      {/* All authenticated routes */}
+      <Route path="/home" element={<Dashboard />} />
+      <Route path="/catalogue" element={<Dashboard />} />
+      <Route path="/subscriptions" element={<Dashboard />} />
+      <Route path="/orders" element={<Dashboard />} />
+      <Route path="/wishlist" element={<Dashboard />} />
+      <Route path="/addresses" element={<Dashboard />} />
+      <Route path="/support" element={<Dashboard />} />
+      <Route path="/order-details" element={<Dashboard />} />
+      <Route path="/order-tracking" element={<Dashboard />} />
+      <Route path="/offers" element={<Dashboard />} />
+      <Route path="/invoices" element={<Dashboard />} />
+      <Route path="/shopping-cart" element={<Dashboard />} />
+      <Route path="/prescriptions" element={<Dashboard />} />
+      <Route path="/order-confirmation" element={<Dashboard />} />
+      <Route path="/checkout" element={<Dashboard />} />
+      <Route path="/profile" element={<Dashboard />} />
+      <Route path="/products/:id" element={<Dashboard />} />
+      <Route path="/products/:sku" element={<Dashboard />} />
+      <Route path="/products" element={<Dashboard />} />
+      
+      {/* Fallback for unauthenticated users */}
+      <Route path="*" element={<Navigate to="/login" />} />
+    </Routes>
+  )
 }
 
 function App() {
   return (
-    <AppContent />
+    <>
+      <AppContent />
+      <ToastContainer />
+    </>
   )
 }
 

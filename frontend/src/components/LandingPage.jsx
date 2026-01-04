@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom'
-function LandingPage({ onNavigate }) {
+
+function LandingPage() {
+  const navigate = useNavigate()
+  
   return (
     <div className="landing-page">
       <header className="landing-header">
@@ -16,9 +19,9 @@ function LandingPage({ onNavigate }) {
             className="landing-card"
             role="button"
             tabIndex={0}
-            onClick={() => onNavigate('login')}
+            onClick={() => navigate('/login')}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') onNavigate('login')
+              if (e.key === 'Enter' || e.key === ' ') navigate('/login')
             }}
             style={{ cursor: 'pointer' }}
           >

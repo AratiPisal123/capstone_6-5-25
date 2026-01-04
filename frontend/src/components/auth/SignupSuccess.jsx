@@ -1,7 +1,10 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './EmailVerification.css'
 
-function SignupSuccess({ onNavigate }) {
+function SignupSuccess() {
+  const navigate = useNavigate()
+  
   return (
     <div className="signup-success-container">
       <div className="success-icon">✓</div>
@@ -11,7 +14,7 @@ function SignupSuccess({ onNavigate }) {
       
       <button 
         className="login-now-btn" 
-        onClick={() => onNavigate('login')}
+        onClick={() => navigate('/login')}
       >
         Login Now
       </button>

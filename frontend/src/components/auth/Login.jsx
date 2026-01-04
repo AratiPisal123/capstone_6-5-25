@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { login } from '../../store/actions/authActions'
+import { useNavigate } from 'react-router-dom'
+import { loginSuccess } from '../../redux/slices/authSlice'
 import { apiRequest } from '../../utils/api'
 import { initializeGoogleAuth, renderGoogleButton, showGoogleOneTap, GOOGLE_CLIENT_ID } from '../../utils/googleAuth'
 
-function Login({ onNavigate }) {
+function Login() {
+  const navigate = useNavigate()
   const [emailOrMobile, setEmailOrMobile] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
@@ -52,7 +54,7 @@ function Login({ onNavigate }) {
       const data = await apiResponse.json()
       console.log('Google authentication successful:', data)
       
-      // Store the JWT token
+      // Store JWT token
       if (data.token) {
         localStorage.setItem('token', data.token)
         console.log('JWT token stored in localStorage, token length:', data.token.length)
@@ -65,7 +67,7 @@ function Login({ onNavigate }) {
         console.log('User info received:', data.user)
         
         // Dispatch login action to update Redux state and store user data
-        dispatch(login(data.user))
+        dispatch(loginSuccess({ user: data.user, token: data.token }))
       }
       
       // Show success message
@@ -73,7 +75,7 @@ function Login({ onNavigate }) {
       
       // Redirect to dashboard
       setTimeout(() => {
-        window.location.href = '/dashboard'
+        navigate('/home')
       }, 1000)
       
     } catch (error) {
@@ -162,7 +164,12 @@ function Login({ onNavigate }) {
       localStorage.setItem('authUser', JSON.stringify(data.user))
       localStorage.setItem('userName', data.user?.name || data.user?.email || emailOrMobile)
 
-      dispatch(login(data.user))
+      dispatch(loginSuccess({ user: data.user, token: data.token }))
+      
+      // Redirect to dashboard
+      setTimeout(() => {
+        navigate('/home')
+      }, 1000)
     } catch (err) {
       setError(getErrorMessage(err))
     } finally {
@@ -202,7 +209,7 @@ function Login({ onNavigate }) {
                 <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
                 Remember Me
               </label>
-              <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('forgot-password') }} className="forgot-link">Forgot Password?</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/forgot-password') }} className="forgot-link">Forgot Password?</a>
             </div>
 
             {error && <p className="error">{error}</p>}
@@ -213,7 +220,7 @@ function Login({ onNavigate }) {
 
             <p className="login-link">
               New user?{' '}
-              <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('signup') }}>Create an account</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); navigate('/signup') }}>Create an account</a>
             </p>
 
            

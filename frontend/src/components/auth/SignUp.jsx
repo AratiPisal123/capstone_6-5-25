@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { login } from '../../store/actions/authActions'
+import { useNavigate } from 'react-router-dom'
+import { loginSuccess } from '../../redux/slices/authSlice'
 import { apiRequest } from '../../utils/api'
 import EmailVerification from './EmailVerification'
 import SignupSuccess from './SignupSuccess'
 import { initializeGoogleAuth, renderGoogleButton, showGoogleOneTap, GOOGLE_CLIENT_ID } from '../../utils/googleAuth'
 
-function SignUp({ onNavigate }) {
+function SignUp() {
+  const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
     name: '',
@@ -70,7 +72,7 @@ function SignUp({ onNavigate }) {
         console.log('User info received:', data.user)
         
         // Dispatch login action to update Redux state and store user data
-        dispatch(login(data.user))
+        dispatch(loginSuccess({ user: data.user, token: data.token }))
       }
       
       // Show success message
@@ -80,7 +82,7 @@ function SignUp({ onNavigate }) {
       
       // TODO: Redirect to dashboard after a short delay
       setTimeout(() => {
-        window.location.href = '/dashboard'
+        navigate('/home')
       }, 2000)
       
     } catch (error) {
@@ -289,7 +291,7 @@ function SignUp({ onNavigate }) {
                 <p>Complete</p>
               </div>
             </div>
-            <SignupSuccess onNavigate={onNavigate} />
+            <SignupSuccess />
           </div>
         </div>
       </div>
@@ -406,7 +408,7 @@ function SignUp({ onNavigate }) {
               {loading ? 'Creating account...' : 'Create Account'}
             </button>
 
-            <p className="login-link">Already have an account? <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login') }}>Login</a></p>
+            <p className="login-link">Already have an account? <a href="#" onClick={(e) => { e.preventDefault(); navigate('/login') }}>Login</a></p>
           </form>
 
           <div className="divider">OR</div>

@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { apiRequest } from '../../utils/api'
 
-function ForgotPassword({ onNavigate }) {
+function ForgotPassword() {
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -77,14 +79,14 @@ function ForgotPassword({ onNavigate }) {
               <button type="submit" className="submit-btn" disabled={loading}>
                 {loading ? 'Sending...' : 'Send Reset Link'}
               </button>
-              <p className="login-link">Back to <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login') }}>Login</a></p>
+              <p className="login-link">Back to <a href="#" onClick={(e) => { e.preventDefault(); navigate('/login') }}>Login</a></p>
             </form>
           ) : (
             <div className="success-wrapper">
               <div className="success-icon">✓</div>
               <h2>Request Submitted</h2>
               <p>If an account exists for <strong>{email}</strong>, you will receive a reset link.</p>
-              <button onClick={() => onNavigate('login')} className="submit-btn">Back to Login</button>
+              <button onClick={() => navigate('/login')} className="submit-btn">Back to Login</button>
             </div>
           )}
         </div>

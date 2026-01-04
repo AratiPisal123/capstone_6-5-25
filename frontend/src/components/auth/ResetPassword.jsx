@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { apiRequest } from '../../utils/api'
 
-function ResetPassword({ onNavigate, resetToken }) {
+function ResetPassword() {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [token, setToken] = useState('')
   const [formData, setFormData] = useState({
     newPassword: '',
@@ -13,6 +16,7 @@ function ResetPassword({ onNavigate, resetToken }) {
   const [tokenValid, setTokenValid] = useState(null)
 
   useEffect(() => {
+    const resetToken = searchParams.get('token')
     if (resetToken) {
       setToken(resetToken)
       setTokenValid(true)
@@ -20,7 +24,7 @@ function ResetPassword({ onNavigate, resetToken }) {
       setError('Invalid or missing reset token')
       setTokenValid(false)
     }
-  }, [resetToken])
+  }, [searchParams])
 
   const validatePassword = (password) => {
     const errors = []
@@ -122,7 +126,7 @@ function ResetPassword({ onNavigate, resetToken }) {
       if (data.message) {
         setMessage('Password reset successfully! Redirecting to login...')
         setTimeout(() => {
-          onNavigate('login')
+          navigate('/login')
         }, 2000)
       }
     } catch (err) {
@@ -157,10 +161,10 @@ function ResetPassword({ onNavigate, resetToken }) {
           <div className="auth-form-wrapper">
             <h2>Invalid Reset Link</h2>
             <p>This password reset link is invalid or has expired.</p>
-            <button onClick={() => onNavigate('forgot-password')} className="submit-btn">
+            <button onClick={() => navigate('/forgot-password')} className="submit-btn">
               Request New Reset Link
             </button>
-            <p className="login-link">Back to <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login') }}>Login</a></p>
+            <p className="login-link">Back to <a href="#" onClick={(e) => { e.preventDefault(); navigate('/login') }}>Login</a></p>
           </div>
         </div>
       </div>
@@ -218,7 +222,7 @@ function ResetPassword({ onNavigate, resetToken }) {
               {loading ? 'Resetting...' : 'Reset Password'}
             </button>
 
-            <p className="login-link">Back to <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('login') }}>Login</a></p>
+            <p className="login-link">Back to <a href="#" onClick={(e) => { e.preventDefault(); navigate('/login') }}>Login</a></p>
           </form>
         </div>
       </div>

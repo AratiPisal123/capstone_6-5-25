@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { apiRequest } from '../../utils/api'
-import { login } from '../../store/actions/authActions'
+import { loginSuccess, updateUser } from '../../redux/slices/authSlice'
 
 function ProfilePage() {
-  const user = useSelector(state => state.user)
+  const user = useSelector(state => state.auth?.user)
   const dispatch = useDispatch()
   const [formData, setFormData] = useState({
     name: '',
@@ -58,7 +58,7 @@ function ProfilePage() {
     const fetchUserData = async () => {
       try {
         const userData = await apiRequest('/user')
-        dispatch(login(userData))
+        dispatch(updateUser(userData))
         localStorage.setItem('user', JSON.stringify(userData))
         localStorage.setItem('authUser', JSON.stringify(userData))
       } catch (err) {
@@ -111,7 +111,7 @@ function ProfilePage() {
       })
       
       // Update Redux state with new user data
-      dispatch(login(updatedUser))
+      dispatch(updateUser(updatedUser))
       
       // Update localStorage with correct key
       localStorage.setItem('user', JSON.stringify(updatedUser))
@@ -267,7 +267,7 @@ function ProfilePage() {
           // Update user data in Redux and localStorage
           const updatedUser = { ...user, profileImage: base64String }
           console.log('Updating user data with profile image:', updatedUser)
-          dispatch(login(updatedUser))
+          dispatch(updateUser(updatedUser))
           localStorage.setItem('user', JSON.stringify(updatedUser))
           localStorage.setItem('authUser', JSON.stringify(updatedUser))
           

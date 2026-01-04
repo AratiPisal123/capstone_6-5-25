@@ -6,8 +6,12 @@ import com.pharma.user.service.GoogleOAuthService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
 import org.jboss.logging.Logger;
 
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -34,6 +38,7 @@ public class GoogleOAuthResource {
     @POST
     @Path("/auth")
     public Response googleLogin(TokenRequest request) {
+        LOG.info("=== GOOGLE OAUTH REQUEST STARTED (NEW CODE) ===");
         try {
             LOG.infof("Received Google ID token for authentication");
             LOG.infof("Token request received - token length: %d", 
@@ -49,7 +54,18 @@ public class GoogleOAuthResource {
             // For now, we'll extract user info from the token without verification
             // In production, you should verify the token signature
             String token = request.getToken();
+            LOG.infof("Raw Google token (first 50 chars): %s...", token.length() > 50 ? token.substring(0, 50) : token);
             Map<String, Object> userInfo = extractUserInfoFromToken(token);
+            
+            // Validate required fields from Google token
+            String email = (String) userInfo.get("email");
+            LOG.infof("Extracted email from token: '%s'", email);
+            if (email == null || email.trim().isEmpty()) {
+                LOG.error("Email not found or empty in Google token. Full user info: " + userInfo);
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Email is required but not provided by Google. Please ensure Google One Tap is configured correctly."))
+                    .build();
+            }
             
             // Create or update user using the Google OAuth service
             String appToken = googleOAuthService.authenticateOrRegisterUserWithGoogleInfo(userInfo);
@@ -115,54 +131,40 @@ public class GoogleOAuthResource {
                 payload += "=";
             }
             
-            byte[] decodedBytes = java.util.Base64.getDecoder().decode(payload);
+            byte[] decodedBytes = java.util.Base64.getUrlDecoder().decode(payload);
             String payloadJson = new String(decodedBytes);
             
             LOG.infof("Decoded Google token payload: %s", payloadJson);
-            
-            // Parse JSON (simple parsing for demo)
+
             Map<String, Object> userInfo = new HashMap<>();
-            
-            // Extract email
-            if (payloadJson.contains("\"email\"")) {
-                String email = extractJsonValue(payloadJson, "email");
-                userInfo.put("email", email);
-            }
-            
-            // Extract full name
-            if (payloadJson.contains("\"name\"")) {
-                String name = extractJsonValue(payloadJson, "name");
-                userInfo.put("name", name);
-            }
-            
-            // Extract given name (first name)
-            if (payloadJson.contains("\"given_name\"")) {
-                String givenName = extractJsonValue(payloadJson, "given_name");
-                userInfo.put("firstName", givenName);
-            }
-            
-            // Extract family name (last name)
-            if (payloadJson.contains("\"family_name\"")) {
-                String familyName = extractJsonValue(payloadJson, "family_name");
-                userInfo.put("lastName", familyName);
-            }
-            
-            // Extract subject (Google ID)
-            if (payloadJson.contains("\"sub\"")) {
-                String sub = extractJsonValue(payloadJson, "sub");
-                userInfo.put("googleId", sub);
-            }
-            
-            // Extract picture URL
-            if (payloadJson.contains("\"picture\"")) {
-                String picture = extractJsonValue(payloadJson, "picture");
-                userInfo.put("picture", picture);
-            }
-            
-            // Extract email verification status
-            if (payloadJson.contains("\"email_verified\"")) {
-                String emailVerified = extractJsonValue(payloadJson, "email_verified");
-                userInfo.put("emailVerified", emailVerified);
+            try (JsonReader reader = Json.createReader(new StringReader(payloadJson))) {
+                JsonObject obj = reader.readObject();
+
+                if (obj.containsKey("email")) {
+                    userInfo.put("email", obj.getString("email", null));
+                }
+                if (obj.containsKey("name")) {
+                    userInfo.put("name", obj.getString("name", null));
+                }
+                if (obj.containsKey("given_name")) {
+                    userInfo.put("firstName", obj.getString("given_name", null));
+                }
+                if (obj.containsKey("family_name")) {
+                    userInfo.put("lastName", obj.getString("family_name", null));
+                }
+                if (obj.containsKey("sub")) {
+                    userInfo.put("googleId", obj.getString("sub", null));
+                }
+                if (obj.containsKey("picture")) {
+                    userInfo.put("picture", obj.getString("picture", null));
+                }
+                if (obj.containsKey("email_verified")) {
+                    try {
+                        userInfo.put("emailVerified", obj.getBoolean("email_verified"));
+                    } catch (Exception ignored) {
+                        userInfo.put("emailVerified", obj.get("email_verified").toString());
+                    }
+                }
             }
             
             LOG.infof("Extracted user info: %s", userInfo);
