@@ -13,3 +13,35 @@ VALUES (
   NOW(),
   true
 );
+
+-- Sample FAQ data
+INSERT INTO faqs (question, answer, category, priority, is_active, created_at, updated_at) VALUES
+('How do I track my order?', 'You can track your order by going to your account dashboard and clicking on "My Orders". You can also use the tracking number sent to your email.', 'ORDER', 1, TRUE, NOW(), NOW()),
+('What payment methods do you accept?', 'We accept credit/debit cards, UPI, net banking, and cash on delivery. All payment methods are secure and encrypted.', 'PAYMENT', 2, TRUE, NOW(), NOW()),
+('How long does delivery take?', 'Standard delivery takes 3-5 business days. Express delivery is available in select cities for an additional charge.', 'DELIVERY', 1, TRUE, NOW(), NOW()),
+('How do I upload a prescription?', 'During checkout, you can upload your prescription by clicking on the "Upload Prescription" button. Make sure the prescription is clear and valid.', 'PRESCRIPTION', 1, TRUE, NOW(), NOW()),
+('What is your return policy?', 'We offer 15-day return policy for most products. Please note that prescription medicines cannot be returned once dispensed.', 'PRODUCT', 1, TRUE, NOW(), NOW()),
+('How do I contact customer support?', 'You can reach our customer support through the support page, by calling 1800-XXX-XXXX, or by emailing support@pharma.com.', 'OTHER', 1, TRUE, NOW(), NOW()),
+('Is my personal information secure?', 'Yes, we use industry-standard encryption to protect your personal and medical information. Your privacy is our top priority.', 'OTHER', 2, TRUE, NOW(), NOW()),
+('Can I cancel my order?', 'You can cancel your order before it has been processed for shipping. Once shipped, you will need to follow the return process.', 'ORDER', 2, TRUE, NOW(), NOW()),
+('Do you deliver to my location?', 'We deliver to most major cities and towns across India. You can check delivery availability by entering your PIN code during checkout.', 'DELIVERY', 2, TRUE, NOW(), NOW()),
+('Are your medicines authentic?', 'Yes, all our medicines are sourced from authorized distributors and manufacturers. We ensure 100% authenticity and quality.', 'PRODUCT', 2, TRUE, NOW(), NOW()),
+('What should I do if I receive a damaged product?', 'If you receive a damaged product, please contact our support team immediately with photos of the damaged item. We will arrange for a replacement or refund.', 'PRODUCT', 3, TRUE, NOW(), NOW()),
+('How do I know if my prescription is valid?', 'A valid prescription must be from a registered medical practitioner, dated within the last 6 months, and clearly show the patient details and prescribed medication.', 'PRESCRIPTION', 2, TRUE, NOW(), NOW()),
+('Can I change my delivery address after placing an order?', 'You can change your delivery address only if the order hasn\'t been shipped yet. Please contact our support team immediately for address changes.', 'DELIVERY', 3, TRUE, NOW(), NOW()),
+('What if the medicine I want is out of stock?', 'If a medicine is out of stock, you can add it to your wishlist and we will notify you when it becomes available. Our team can also suggest suitable alternatives.', 'PRODUCT', 3, TRUE, NOW(), NOW()),
+('How do I apply discount codes?', 'You can apply discount codes during checkout in the "Promo Code" field. Only one discount code can be used per order.', 'PAYMENT', 3, TRUE, NOW(), NOW()),
+('Is there a minimum order value?', 'No, there is no minimum order value. You can order as little or as much as you need.', 'ORDER', 3, TRUE, NOW(), NOW()),
+('What if I receive the wrong medicine?', 'If you receive the wrong medicine, please do not consume it. Contact our support team immediately and we will arrange for the correct medicine to be delivered.', 'PRODUCT', 4, TRUE, NOW(), NOW()),
+('How do I check my order history?', 'You can check your complete order history in your account dashboard under "My Orders". All past and current orders are listed there.', 'ORDER', 4, TRUE, NOW(), NOW()),
+('Can someone else pick up my order?', 'Yes, someone else can pick up your order if they provide the order number and a valid ID proof at our pickup location.', 'DELIVERY', 4, TRUE, NOW(), NOW()),
+('Do you offer express delivery?', 'Yes, we offer express delivery in major cities for an additional charge. Delivery time is typically 1-2 business days.', 'DELIVERY', 4, TRUE, NOW(), NOW()),
+('What if I have an allergic reaction?', 'If you experience any allergic reaction, stop using the medicine immediately and seek medical attention. Report the reaction to our support team.', 'PRESCRIPTION', 3, TRUE, NOW(), NOW()),
+('How do I know my order is confirmed?', 'You will receive an order confirmation email with all details once your order is successfully placed and payment is processed.', 'ORDER', 5, TRUE, NOW(), NOW()),
+('Can I order medicines for someone else?', 'Yes, you can order medicines for family members, but you will need to provide their valid prescription and details during checkout.', 'PRESCRIPTION', 4, TRUE, NOW(), NOW()),
+('What if my payment fails?', 'If your payment fails, please check your payment details and try again. If the issue persists, contact your bank or try a different payment method.', 'PAYMENT', 4, TRUE, NOW(), NOW()),
+('How do I track my prescription uploads?', 'You can view all your uploaded prescriptions in your account dashboard under "My Prescriptions". Each upload is tracked with status updates.', 'PRESCRIPTION', 5, TRUE, NOW(), NOW()),
+('Do you have a mobile app?', 'Yes, you can download our mobile app from the App Store or Google Play Store for a better mobile experience.', 'OTHER', 3, TRUE, NOW(), NOW()),
+('What are your customer support hours?', 'Our customer support is available 24/7 through phone, email, and live chat. We are always here to help you!', 'OTHER', 4, TRUE, NOW(), NOW()),
+('How do I leave feedback?', 'You can leave feedback for products and services in your account dashboard or by emailing us at feedback@pharma.com.', 'OTHER', 5, TRUE, NOW(), NOW()),
+('What if I need emergency medicine?', 'For emergency medical needs, please contact your nearest hospital or emergency services immediately. We are not an emergency medical service.', 'OTHER', 6, TRUE, NOW(), NOW());

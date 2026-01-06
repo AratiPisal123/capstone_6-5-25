@@ -1,9 +1,12 @@
 package com.pharma.service;
 
 import com.pharma.entity.*;
+import com.pharma.user.entity.User;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,6 +15,9 @@ import java.util.List;
 
 @ApplicationScoped
 public class DataInitializationService {
+
+    @Inject
+    EntityManager entityManager;
 
     private static final String[] CATALOG_IMAGE_URLS = new String[] {
             "https://5.imimg.com/data5/SELLER/Default/2024/3/402766879/SJ/UD/EJ/16610750/teicoplanin-injection-500x500.png",
@@ -44,6 +50,20 @@ public class DataInitializationService {
     );
     
     void onStart(@Observes StartupEvent ev) {
+        // Run support data initialization asynchronously to avoid connection issues
+        new Thread(() -> {
+            try {
+                Thread.sleep(5000); // Wait for application to fully start
+                initializeSupportData();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.err.println("Support data initialization interrupted: " + e.getMessage());
+            } catch (Exception e) {
+                System.err.println("Error during support data initialization: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }).start();
+        
         long existingCatalogProducts = Product.count("sku in ?1", CATALOG_SKUS);
         if (existingCatalogProducts < CATALOG_SKUS.size()) {
             System.out.println("Ensuring database has sample catalogue data...");
@@ -65,6 +85,15 @@ public class DataInitializationService {
         
         // Create products
         createProducts();
+    }
+    
+    @Transactional
+    public void initializeSupportData() {
+        // Create FAQs
+        createFAQs();
+        
+        // Create demo user if not exists
+        createDemoUser();
     }
     
     private void createWarehouses() {
@@ -366,5 +395,186 @@ public class DataInitializationService {
         image.sortOrder = 1;
         image.isPrimary = true;
         image.persist();
+    }
+    
+    private void createFAQs() {
+        // Check if FAQs already exist
+        if (FAQ.count() > 0) {
+            System.out.println("FAQs already exist, skipping FAQ creation.");
+            return;
+        }
+        
+        System.out.println("Creating sample FAQs...");
+        
+        // Order related FAQs
+        createFAQ("How do I track my order?", 
+            "You can track your order by going to your account dashboard and clicking on \"My Orders\". You can also use the tracking number sent to your email.", 
+            "ORDER", 1);
+            
+        createFAQ("What payment methods do you accept?", 
+            "We accept credit/debit cards, UPI, net banking, and cash on delivery. All payment methods are secure and encrypted.", 
+            "PAYMENT", 2);
+            
+        createFAQ("How long does delivery take?", 
+            "Standard delivery takes 3-5 business days. Express delivery is available in select cities for an additional charge.", 
+            "DELIVERY", 1);
+            
+        createFAQ("How do I upload a prescription?", 
+            "During checkout, you can upload your prescription by clicking on the \"Upload Prescription\" button. Make sure the prescription is clear and valid.", 
+            "PRESCRIPTION", 1);
+            
+        createFAQ("What is your return policy?", 
+            "We offer 15-day return policy for most products. Please note that prescription medicines cannot be returned once dispensed.", 
+            "PRODUCT", 1);
+            
+        createFAQ("How do I contact customer support?", 
+            "You can reach our customer support through the support page, by calling 1800-XXX-XXXX, or by emailing support@pharma.com.", 
+            "OTHER", 1);
+            
+        createFAQ("Is my personal information secure?", 
+            "Yes, we use industry-standard encryption to protect your personal and medical information. Your privacy is our top priority.", 
+            "OTHER", 2);
+            
+        createFAQ("Can I cancel my order?", 
+            "You can cancel your order before it has been processed for shipping. Once shipped, you will need to follow the return process.", 
+            "ORDER", 2);
+            
+        createFAQ("Do you deliver to my location?", 
+            "We deliver to most major cities and towns across India. You can check delivery availability by entering your PIN code during checkout.", 
+            "DELIVERY", 2);
+            
+        createFAQ("Are your medicines authentic?", 
+            "Yes, all our medicines are sourced from authorized distributors and manufacturers. We ensure 100% authenticity and quality.", 
+            "PRODUCT", 2);
+            
+        createFAQ("What should I do if I receive a damaged product?", 
+            "If you receive a damaged product, please contact our support team immediately with photos of the damaged item. We will arrange for a replacement or refund.", 
+            "PRODUCT", 3);
+            
+        createFAQ("How do I know if my prescription is valid?", 
+            "A valid prescription must be from a registered medical practitioner, dated within the last 6 months, and clearly show the patient details and prescribed medication.", 
+            "PRESCRIPTION", 2);
+            
+        createFAQ("Can I change my delivery address after placing an order?", 
+            "You can change your delivery address only if the order hasn't been shipped yet. Please contact our support team immediately for address changes.", 
+            "DELIVERY", 3);
+            
+        createFAQ("What if the medicine I want is out of stock?", 
+            "If a medicine is out of stock, you can add it to your wishlist and we will notify you when it becomes available. Our team can also suggest suitable alternatives.", 
+            "PRODUCT", 3);
+            
+        createFAQ("How do I apply discount codes?", 
+            "You can apply discount codes during checkout in the \"Promo Code\" field. Only one discount code can be used per order.", 
+            "PAYMENT", 3);
+            
+        createFAQ("Is there a minimum order value?", 
+            "No, there is no minimum order value. You can order as little or as much as you need.", 
+            "ORDER", 3);
+            
+        createFAQ("What if I receive the wrong medicine?", 
+            "If you receive the wrong medicine, please do not consume it. Contact our support team immediately and we will arrange for the correct medicine to be delivered.", 
+            "PRODUCT", 4);
+            
+        createFAQ("How do I check my order history?", 
+            "You can check your complete order history in your account dashboard under \"My Orders\". All past and current orders are listed there.", 
+            "ORDER", 4);
+            
+        createFAQ("Can someone else pick up my order?", 
+            "Yes, someone else can pick up your order if they provide the order number and a valid ID proof at our pickup location.", 
+            "DELIVERY", 4);
+            
+        createFAQ("Do you offer express delivery?", 
+            "Yes, we offer express delivery in major cities for an additional charge. Delivery time is typically 1-2 business days.", 
+            "DELIVERY", 4);
+            
+        createFAQ("What if I have an allergic reaction?", 
+            "If you experience any allergic reaction, stop using the medicine immediately and seek medical attention. Report the reaction to our support team.", 
+            "PRESCRIPTION", 3);
+            
+        createFAQ("How do I know my order is confirmed?", 
+            "You will receive an order confirmation email with all details once your order is successfully placed and payment is processed.", 
+            "ORDER", 5);
+            
+        createFAQ("Can I order medicines for someone else?", 
+            "Yes, you can order medicines for family members, but you will need to provide their valid prescription and details during checkout.", 
+            "PRESCRIPTION", 4);
+            
+        createFAQ("What if my payment fails?", 
+            "If your payment fails, please check your payment details and try again. If the issue persists, contact your bank or try a different payment method.", 
+            "PAYMENT", 4);
+            
+        createFAQ("How do I track my prescription uploads?", 
+            "You can view all your uploaded prescriptions in your account dashboard under \"My Prescriptions\". Each upload is tracked with status updates.", 
+            "PRESCRIPTION", 5);
+            
+        createFAQ("Do you have a mobile app?", 
+            "Yes, you can download our mobile app from the App Store or Google Play Store for a better mobile experience.", 
+            "OTHER", 3);
+            
+        createFAQ("What are your customer support hours?", 
+            "Our customer support is available 24/7 through phone, email, and live chat. We are always here to help you!", 
+            "OTHER", 4);
+            
+        createFAQ("How do I leave feedback?", 
+            "You can leave feedback for products and services in your account dashboard or by emailing us at feedback@pharma.com.", 
+            "OTHER", 5);
+            
+        createFAQ("What if I need emergency medicine?", 
+            "For emergency medical needs, please contact your nearest hospital or emergency services immediately. We are not an emergency medical service.", 
+            "OTHER", 6);
+        
+        System.out.println("Created " + FAQ.count() + " FAQs successfully.");
+    }
+    
+    private void createFAQ(String question, String answer, String category, int priority) {
+        FAQ faq = new FAQ();
+        faq.setQuestion(question);     // Use setter method
+        faq.setAnswer(answer);         // Use setter method
+        faq.setCategory(category);     // Use setter method
+        faq.setPriority(priority);     // Use setter method
+        faq.setIsActive(true);         // Use setter method
+        // faqId and timestamps will be set by @PrePersist method
+        faq.persist();
+    }
+    
+    private void createDemoUser() {
+        // Check if demo user already exists (using native query since User doesn't extend PanacheEntity)
+        try {
+            List<User> users = entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
+                    .setParameter("email", "demo@pharma.com")
+                    .getResultList();
+            if (!users.isEmpty()) {
+                System.out.println("Demo user already exists, skipping user creation.");
+                return;
+            }
+        } catch (Exception e) {
+            System.out.println("Error checking for demo user: " + e.getMessage());
+        }
+        
+        System.out.println("Creating demo user...");
+        
+        try {
+            User user = new User();
+            user.setName("Demo User");
+            user.setEmail("demo@pharma.com");
+            user.setMobile("9999999999");
+            user.setPassword("$2a$12$h6bK8Xo2k.3Qqv0y1m8bEOT5aYJ5cB1o0t3oPSePpF0u0wM5vR1Qe");
+            user.setRole(com.pharma.user.entity.UserRole.CUSTOMER);
+            user.setEmailVerified(true);
+            user.setMobileVerified(true);
+            user.setCreatedAt(LocalDateTime.now());
+            user.setUpdatedAt(LocalDateTime.now());
+            user.setLastLogin(LocalDateTime.now());
+            user.setIsActive(true);
+            
+            // Use EntityManager to persist the user
+            entityManager.persist(user);
+            entityManager.flush();
+            
+            System.out.println("Demo user created successfully.");
+        } catch (Exception e) {
+            System.out.println("Error creating demo user: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
