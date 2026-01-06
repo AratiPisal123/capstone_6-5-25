@@ -153,24 +153,6 @@ function ContactForm() {
           </button>
         </div>
       </form>
-
-      <div className="response-info">
-        <h4>Response Times</h4>
-        <div className="response-grid">
-          <div className="response-item">
-            <span className="response-type">Email</span>
-            <span className="response-time">Within 24 hours</span>
-          </div>
-          <div className="response-item">
-            <span className="response-type">Phone</span>
-            <span className="response-time">Immediate</span>
-          </div>
-          <div className="response-item">
-            <span className="response-type">Live Chat</span>
-            <span className="response-time">Instant</span>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
