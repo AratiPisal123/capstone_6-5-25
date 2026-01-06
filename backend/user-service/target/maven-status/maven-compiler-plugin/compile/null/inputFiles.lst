@@ -40,6 +40,7 @@ C:\Users\adminuser\Downloads\cencoraProject05-01-26\backend\user-service\src\mai
 C:\Users\adminuser\Downloads\cencoraProject05-01-26\backend\user-service\src\main\java\com\pharma\service\WarehouseService.java
 C:\Users\adminuser\Downloads\cencoraProject05-01-26\backend\user-service\src\main\java\com\pharma\user\repository\AddressRepository.java
 C:\Users\adminuser\Downloads\cencoraProject05-01-26\backend\user-service\src\main\java\com\pharma\entity\FAQ.java
+C:\Users\adminuser\Downloads\cencoraProject05-01-26\backend\user-service\src\main\java\com\pharma\support\repository\NotificationRepository.java
 C:\Users\adminuser\Downloads\cencoraProject05-01-26\backend\user-service\src\main\java\com\pharma\user\dto\LoginRequest.java
 C:\Users\adminuser\Downloads\cencoraProject05-01-26\backend\user-service\src\main\java\com\pharma\controller\SupportController.java
 C:\Users\adminuser\Downloads\cencoraProject05-01-26\backend\user-service\src\main\java\com\pharma\controller\WishlistController.java

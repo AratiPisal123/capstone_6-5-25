@@ -144,22 +144,6 @@ function FAQSection() {
           />
           <span className="search-icon">🔍</span>
         </div>
-
-        <div className="category-filters">
-          {categories.map(category => (
-            <button
-              key={category}
-              onClick={() => {
-                console.log('Category clicked:', category)
-                setSelectedCategory(category)
-                setSearchQuery('')
-              }}
-              className={`category-filter ${selectedCategory === category ? 'active' : ''}`}
-            >
-              {category === 'all' ? '📋 All' : `${getCategoryIcon(category)} ${category}`}
-            </button>
-          ))}
-        </div>
       </div>
 
       {error && (
