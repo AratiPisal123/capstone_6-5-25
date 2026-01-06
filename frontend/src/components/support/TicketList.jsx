@@ -95,31 +95,8 @@ function TicketList({ onTicketSelect, onTicketCountUpdate, selectedTicket, onUpd
       <div className="ticket-list empty">
         <div className="empty-state">
           <div className="empty-icon">📋</div>
-          <h3>No Support Tickets Yet</h3>
-          <p>You haven't created any support tickets. Create your first ticket to get help from our support team.</p>
-          
-          {/* Simple FAQ Section */}
-          <div className="simple-faq-section">
-            <h4>📚 Quick Help - Common Questions</h4>
-            <div className="faq-items">
-              <div className="faq-item">
-                <h5>How do I track my order?</h5>
-                <p>You can track your order by going to your account dashboard and clicking on "My Orders". You can also use the tracking number sent to your email.</p>
-              </div>
-              <div className="faq-item">
-                <h5>What payment methods do you accept?</h5>
-                <p>We accept credit/debit cards, UPI, net banking, and cash on delivery. All payment methods are secure and encrypted.</p>
-              </div>
-              <div className="faq-item">
-                <h5>How long does delivery take?</h5>
-                <p>Standard delivery takes 3-5 business days. Express delivery is available in select cities for an additional charge.</p>
-              </div>
-              <div className="faq-item">
-                <h5>How do I upload a prescription?</h5>
-                <p>During checkout, you can upload your prescription by clicking on the "Upload Prescription" button. Make sure the prescription is clear and valid.</p>
-              </div>
-            </div>
-          </div>
+          <h3>Create Your First Ticket</h3>
+          <p>Get help from our support team by creating your first support ticket.</p>
           
           <button 
             onClick={() => onTicketSelect && onTicketSelect(null)}

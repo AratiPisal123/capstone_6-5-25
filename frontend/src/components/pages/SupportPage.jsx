@@ -26,6 +26,10 @@ function SupportPage() {
     if (isUpdating) {
       // If we're in update mode, just update the selected ticket
       setSelectedTicket(ticket)
+    } else if (ticket === null) {
+      // If ticket is null, go to create tab (for "Create First Ticket" button)
+      setActiveTab('create')
+      setSelectedTicket(null)
     } else {
       // Normal selection - go to detail view
       setSelectedTicket(ticket)

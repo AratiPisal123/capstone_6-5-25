@@ -31,15 +31,7 @@ function TicketDetail({ ticket }) {
   }
 
   if (!ticket) {
-    return (
-      <div className="ticket-detail">
-        <div className="no-ticket-selected">
-          <div className="no-ticket-icon">📋</div>
-          <h3>No Ticket Selected</h3>
-          <p>Please select a ticket from the list to view details.</p>
-        </div>
-      </div>
-    )
+    return null
   }
 
   return (
